@@ -1,0 +1,93 @@
+ <!DOCTYPE html>
+<html lang="en">
+	<head>
+	  <title>Cake Day</title>
+	  <meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.js"></script>
+	  <style>
+		.app-container{max-width:450px; text-align:center;  margin:0 auto;margin-top:50px;}
+		body{background-color:#008080;}
+		h3{color:#fff;font-weight:bold;margin-left:10px;}
+		.top-buffer { margin-top:20px; }
+		input[type=button]{font-weight:bold;}
+		a{margin-left:10px;}
+	  </style>
+	  
+	</head>
+	
+	<body>
+
+		<div class="container-fluid">
+			<div class="app-container" ng-app="cakeApp" ng-controller="cakeController">
+			
+				<div class="row">
+					<div class="col-md-2"><img height="60px" src="cake.png"></div>
+					<div class="col-md-10"><h3> Find a user's reddit cake day </h3></div>
+				</div>
+				
+				<div class="well well-lg top-buffer ">
+					<div class="row">
+						<input type="text" ng-model="username" placeholder="Reddit username" class="input-lg form-control" id="reddituser" name="reddituser">
+					</div>
+					
+					<div class="row top-buffer">
+						<input type="button" value="Submit" class=" input-lg form-control col-md-8 btn btn-primary" ng-click="submit()" id="submit">
+					</div>
+					
+				</div>
+				<div class="well-lg bg-success text-success" ng-show="sResponse==true">
+					<img height="30px" src="cake.png"><strong><a href="https://www.reddit.com/user/{{rName}}" target="_blank"><span style="font-size:1.5em" class="text-primary">/u/{{rName}}</span></a>'s 
+					cake day is on {{rDate * 1000 | date:'dd MMMM'}}</strong>
+				</div>
+				<div class="bg-danger well-sm text-danger top-buffer" ng-show="err==true">{{errorString}}</div>
+			</div>
+		</div>
+		
+		<script>
+			var app = angular.module('cakeApp', []);
+			app.controller('cakeController', function($scope,$http) {
+				$scope.err=false;
+				$scope.username="";
+				$scope.sResponse=false;
+				$scope.rNname="";
+				$scope.rDate="";
+				$scope.errorString="";
+				$scope.submit = function() {
+					if($scope.username=="")
+					{
+						$scope.err=true;
+						$scope.sResponse=false;
+						$scope.errorString="Enter a username.";
+					}else
+					{
+						$scope.err=false;
+						
+						
+						$http({
+						  method: 'GET',
+						  url: 'https://www.reddit.com/user/'+$scope.username+'/about.json'
+						}).
+						success(function(response) {
+							$scope.rName = response.data.name;
+							$scope.rDate = response.data.created_utc;
+							$scope.sResponse=true;
+							
+						}).
+						error(function(response) {
+							$scope.errorString=response||"Username does not exist.";
+							$scope.err=true;
+							console.log(response);
+						});
+					}
+				}
+				
+			});
+		</script>
+		
+
+	</body>
+</html>
