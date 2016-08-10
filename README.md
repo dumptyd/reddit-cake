@@ -1,5 +1,5 @@
 # reddit-cake
 
-tells when the cake day of a reddit user is
+A webapp to find cake day of reddit users.
 
-Just run the HTML file, there's not much to it.
+Clone and run `index.html`
